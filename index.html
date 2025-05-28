@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pasta Timer</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; background: #f7f7f7; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    #timer { font-size: 3rem; margin-top: 1rem; }
+    button { padding: 1rem 2rem; font-size: 1rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1 id="title">Pasta Timer</h1>
+  <div id="timer">--:--</div>
+  <button onclick="startTimer('Spaghetti', 9)">Start Spaghetti (9 min)</button>
+  <button onclick="startTimer('Penne', 11)">Start Penne (11 min)</button>
+  <button onclick="startTimer('Fusilli', 10)">Start Fusilli (10 min)</button>
+  <button onclick="startTimer('Tagliatelle', 8)">Start Tagliatelle (8 min)</button>
+
+  <script>
+    let countdown;
+
+    function startTimer(pasta, minutes) {
+      clearInterval(countdown);
+      const title = document.getElementById('title');
+      const timerDisplay = document.getElementById('timer');
+      title.textContent = `${pasta} Cooking...`;
+
+      const endTime = Date.now() + minutes * 60 * 1000;
+
+      function updateTimer() {
+        const secondsLeft = Math.round((endTime - Date.now()) / 1000);
+        if (secondsLeft <= 0) {
+          clearInterval(countdown);
+          timerDisplay.textContent = "Done! 🍝";
+          title.textContent = `${pasta} is ready!`;
+          return;
+        }
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+
+      updateTimer();
+      countdown = setInterval(updateTimer, 1000);
+    }
+
+    // Parse URL parameters to auto-start timer
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const timer = params.get("timer");
+      const pastaMap = {
+        spaghetti: { name: "Spaghetti", minutes: 9 },
+        penne: { name: "Penne", minutes: 11 },
+        fusilli: { name: "Fusilli", minutes: 10 },
+        tagliatelle: { name: "Tagliatelle", minutes: 8 },
+      };
+      if (timer && pastaMap[timer.toLowerCase()]) {
+        const { name, minutes } = pastaMap[timer.toLowerCase()];
+        startTimer(name, minutes);
+      }
+    };
+  </script>
+</body>
+</html>
