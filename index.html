@@ -1,67 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pasta Timer</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; background: #f7f7f7; }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    #timer { font-size: 3rem; margin-top: 1rem; }
-    button { padding: 1rem 2rem; font-size: 1rem; margin-top: 2rem; }
-  </style>
-</head>
-<body>
-  <h1 id="title">Pasta Timer</h1>
-  <div id="timer">--:--</div>
-  <button onclick="startTimer('Spaghetti', 9)">Start Spaghetti (9 min)</button>
-  <button onclick="startTimer('Penne', 11)">Start Penne (11 min)</button>
-  <button onclick="startTimer('Fusilli', 10)">Start Fusilli (10 min)</button>
-  <button onclick="startTimer('Tagliatelle', 8)">Start Tagliatelle (8 min)</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pasta Timer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1 id="title">Pasta Timer</h1>
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1rem;
+        position: relative;
+      "
+    >
+      <svg id="progressCircle" width="140" height="140">
+        <circle
+          cx="70"
+          cy="70"
+          r="60"
+          stroke="#e0e0e0"
+          stroke-width="10"
+          fill="none"
+        />
+        <circle
+          id="progressBar"
+          cx="70"
+          cy="70"
+          r="60"
+          stroke="#4caf50"
+          stroke-width="10"
+          fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="377"
+          stroke-dashoffset="377"
+          transform="rotate(-90 70 70)"
+        />
+      </svg>
+      <div
+        id="timer"
+        style="
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 140px;
+          text-align: center;
+          font-size: 2.5rem;
+          line-height: 140px;
+          pointer-events: none;
+        "
+      >
+        --:--
+      </div>
+    </div>
+    <button id="pausePlayBtn" style="display: none; margin-top: 1rem">
+      Pause
+    </button>
+    <button id="restartBtn" style="display: none; margin-top: 1rem">
+      Restart
+    </button>
+    <audio
+      id="doneSound"
+      src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+      preload="auto"
+    ></audio>
 
-  <script>
-    let countdown;
+    <script>
+      let countdown;
+      let paused = false;
+      let remainingSeconds = 0;
+      let endTime = 0;
+      let currentPasta = "";
+      let currentMinutes = 0;
+      let totalSeconds = 0;
 
-    function startTimer(pasta, minutes) {
-      clearInterval(countdown);
-      const title = document.getElementById('title');
-      const timerDisplay = document.getElementById('timer');
-      title.textContent = `${pasta} Cooking...`;
+      function setCircleProgress(percent) {
+        const circle = document.getElementById("progressBar");
+        const circumference = 2 * Math.PI * 60; // r=60
+        const offset = circumference * (1 - percent);
+        circle.style.strokeDashoffset = offset;
+      }
 
-      const endTime = Date.now() + minutes * 60 * 1000;
+      function startTimer(pasta, minutes, resume = false) {
+        clearInterval(countdown);
+        const title = document.getElementById("title");
+        const timerDisplay = document.getElementById("timer");
+        const pausePlayBtn = document.getElementById("pausePlayBtn");
+        const restartBtn = document.getElementById("restartBtn");
+        const doneSound = document.getElementById("doneSound");
+        title.textContent = `${pasta} Cooking...`;
+        pausePlayBtn.style.display = "inline-block";
+        restartBtn.style.display = "inline-block";
+        pausePlayBtn.textContent = "Pause";
+        paused = false;
 
-      function updateTimer() {
-        const secondsLeft = Math.round((endTime - Date.now()) / 1000);
-        if (secondsLeft <= 0) {
-          clearInterval(countdown);
-          timerDisplay.textContent = "Done! 🍝";
-          title.textContent = `${pasta} is ready!`;
-          return;
+        currentPasta = pasta;
+        currentMinutes = minutes;
+        totalSeconds = minutes * 60;
+
+        if (!resume) {
+          remainingSeconds = totalSeconds;
         }
-        const mins = Math.floor(secondsLeft / 60);
-        const secs = secondsLeft % 60;
-        timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        endTime = Date.now() + remainingSeconds * 1000;
+
+        function updateTimer() {
+          if (!paused) {
+            remainingSeconds = Math.round((endTime - Date.now()) / 1000);
+          }
+          if (remainingSeconds <= 0) {
+            clearInterval(countdown);
+            timerDisplay.textContent = "Done! 🍝";
+            title.textContent = `${pasta} is ready!`;
+            doneSound.play();
+            pausePlayBtn.style.display = "none";
+            restartBtn.style.display = "inline-block";
+            setCircleProgress(1);
+
+            // Play sound and vibrate
+            playBeep();
+            if (navigator.vibrate) {
+              navigator.vibrate([300, 100, 300]);
+            }
+            return;
+          }
+          const mins = Math.floor(remainingSeconds / 60);
+          const secs = remainingSeconds % 60;
+          timerDisplay.textContent = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+          setCircleProgress((totalSeconds - remainingSeconds) / totalSeconds);
+        }
+
+        updateTimer();
+        countdown = setInterval(updateTimer, 1000);
       }
 
-      updateTimer();
-      countdown = setInterval(updateTimer, 1000);
-    }
-
-    // Parse URL parameters to auto-start timer
-    window.onload = function () {
-      const params = new URLSearchParams(window.location.search);
-      const timer = params.get("timer");
-      const pastaMap = {
-        spaghetti: { name: "Spaghetti", minutes: 9 },
-        penne: { name: "Penne", minutes: 11 },
-        fusilli: { name: "Fusilli", minutes: 10 },
-        tagliatelle: { name: "Tagliatelle", minutes: 8 },
+      document.getElementById("pausePlayBtn").onclick = function () {
+        const pausePlayBtn = document.getElementById("pausePlayBtn");
+        if (!paused) {
+          paused = true;
+          clearInterval(countdown);
+          pausePlayBtn.textContent = "Play";
+        } else {
+          paused = false;
+          endTime = Date.now() + remainingSeconds * 1000;
+          pausePlayBtn.textContent = "Pause";
+          startTimer(currentPasta, currentMinutes, true);
+        }
       };
-      if (timer && pastaMap[timer.toLowerCase()]) {
-        const { name, minutes } = pastaMap[timer.toLowerCase()];
-        startTimer(name, minutes);
-      }
-    };
-  </script>
-</body>
+
+      document.getElementById("restartBtn").onclick = function () {
+        paused = false;
+        document.getElementById("pausePlayBtn").textContent = "Pause";
+        startTimer(currentPasta, currentMinutes);
+      };
+
+      // Parse URL parameters to auto-start timer
+      window.onload = function () {
+        const params = new URLSearchParams(window.location.search);
+        const timer = params.get("timer");
+        const pastaMap = {
+          test: { name: "Penne Arrabbiata", minutes: 0.15 },
+          spaghetti: { name: "Spaghetti", minutes: 9 },
+          penne: { name: "Penne", minutes: 11 },
+          fusilli: { name: "Fusilli", minutes: 10 },
+          tagliatelle: { name: "Tagliatelle", minutes: 8 },
+        };
+        // Center timer text over SVG
+        document.getElementById("timer").style.position = "absolute";
+        document.getElementById("timer").style.left = "50%";
+        document.getElementById("timer").style.top = "70px";
+        document.getElementById("timer").style.transform =
+          "translate(-50%, -50%)";
+        if (timer && pastaMap[timer.toLowerCase()]) {
+          const { name, minutes } = pastaMap[timer.toLowerCase()];
+          startTimer(name, minutes);
+        }
+      };
+    </script>
+  </body>
 </html>
