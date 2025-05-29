@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Pasta Timers</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .editor-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: #fff7eb;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem;
+        border-bottom: 1px solid #ccc;
+      }
+      input[type="number"] {
+        width: 60px;
+      }
+      button {
+        background: #f4d35e;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+      // If you want to use other Firebase products, import them as needed
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyDwCr7eaBZ9LS-ZAiE6cjpAlg4txN7ares",
+        authDomain: "pastatimer-25.firebaseapp.com",
+        projectId: "pastatimer-25",
+        storageBucket: "pastatimer-25.firebasestorage.app",
+        messagingSenderId: "889344281638",
+        appId: "1:889344281638:web:883c830c9bc55753d1aae7",
+        measurementId: "G-DBSR4R4B0Y",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+
+      // Firebase imports
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+      } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+      const db = getFirestore(app);
+
+      // Default pasta times (used if no data in Firestore)
+      const defaultPastaMap = {
+        spaghetti: 9,
+        penne: 11,
+        fusilli: 10,
+        tagliatelle: 8,
+        test: 0.15,
+      };
+
+      const pastaTable = document.createElement("table");
+
+      function renderTable(data) {
+        pastaTable.innerHTML = `<tr><th>Pasta Type</th><th>Minutes</th></tr>`;
+        for (const [key, time] of Object.entries(data)) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${key}</td>
+            <td><input type="number" step="1" value="${time}" data-pasta="${key}" /></td>
+          `;
+          pastaTable.appendChild(row);
+        }
+      }
+
+      async function loadTimers() {
+        const docRef = doc(db, "timers", "pasta");
+        const snap = await getDoc(docRef);
+        const data = snap.exists() ? snap.data() : defaultPastaMap;
+        renderTable(data);
+      }
+
+      async function saveTimers() {
+        const inputs = document.querySelectorAll("input[data-pasta]");
+        const updated = {};
+        inputs.forEach((input) => {
+          const pasta = input.dataset.pasta;
+          updated[pasta] = parseFloat(input.value);
+        });
+        await setDoc(doc(db, "timers", "pasta"), updated);
+        alert("Saved!");
+        await loadTimers();
+      }
+
+      // Add pasta type functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        const addForm = document.getElementById("addPastaForm");
+        addForm.onsubmit = async (e) => {
+          e.preventDefault();
+          const name = document
+            .getElementById("newPastaName")
+            .value.trim()
+            .toLowerCase();
+          const time = parseFloat(
+            document.getElementById("newPastaTime").value
+          );
+          if (!name || isNaN(time)) {
+            alert("Please enter a valid pasta name and time.");
+            return;
+          }
+          // Get current data
+          const docRef = doc(db, "timers", "pasta");
+          const snap = await getDoc(docRef);
+          const data = snap.exists() ? snap.data() : {};
+          if (data[name]) {
+            alert("That pasta type already exists.");
+            return;
+          }
+          data[name] = time;
+          await setDoc(docRef, data);
+          document.getElementById("newPastaName").value = "";
+          document.getElementById("newPastaTime").value = "";
+          await loadTimers();
+        };
+      });
+
+      window.onload = async () => {
+        document.getElementById("table-holder").appendChild(pastaTable);
+        await loadTimers();
+        document.getElementById("saveBtn").onclick = saveTimers;
+      };
+    </script>
+  </head>
+  <body>
+    <header>
+      <a href="index.html" class="logo">🍝 PastaTimer</a>
+      <nav>
+        <a href="index.html">Back to Timer</a>
+      </nav>
+    </header>
+
+    <main class="editor-container">
+      <h2>Edit Your Pasta Times</h2>
+      <div id="table-holder"></div>
+      <form id="addPastaForm" style="margin-bottom: 1rem">
+        <input
+          type="text"
+          id="newPastaName"
+          placeholder="New pasta type"
+          required
+          style="width: 140px"
+        />
+        <input
+          type="number"
+          id="newPastaTime"
+          placeholder="Minutes"
+          step="0.1"
+          required
+          style="width: 80px"
+        />
+        <button type="submit">Add Pasta</button>
+      </form>
+      <button id="saveBtn">Save</button>
+    </main>
+
+    <footer>
+      <p>Custom pasta times are stored in the cloud ☁️</p>
+    </footer>
+  </body>
+</html>
