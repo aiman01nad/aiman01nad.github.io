@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pasta Timer</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      .pasta-image {
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .pasta-image img {
+        max-width: 200px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      .pasta-image .label {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -22,7 +40,10 @@
         </p>
       </section>
 
-      <div id="pastaPhoto" class="pasta-photo"></div>
+      <div id="pastaPhoto" class="pasta-image" style="display: none">
+        <img id="pastaImg" src="" alt="" />
+        <div class="label" id="pastaLabel"></div>
+      </div>
 
       <section class="timer-section">
         <div class="timer-container">
@@ -60,7 +81,9 @@
 
     <footer>
       <p>Made with ❤️ for pasta lovers</p>
-      <a href="https://github.com/aiman01nad/aiman01nad.github.io">View on GitHub</a>
+      <a href="https://github.com/aiman01nad/aiman01nad.github.io"
+        >View on GitHub</a
+      >
     </footer>
 
     <audio
@@ -70,5 +93,25 @@
     ></audio>
 
     <script src="script.js"></script>
+    <script>
+      // Display pasta image and label
+      function showPastaImage(pastaName) {
+        const img = document.getElementById("pastaImg");
+        const label = document.getElementById("pastaLabel");
+        const container = document.getElementById("pastaPhoto");
+        img.src = `images/${pastaName.toLowerCase()}.jpg`;
+        img.alt = pastaName;
+        label.textContent = pastaName.charAt(0).toUpperCase() + pastaName.slice(1);
+        container.style.display = "block";
+      }
+
+      window.addEventListener("load", () => {
+        const params = new URLSearchParams(window.location.search);
+        const timer = params.get("timer");
+        if (timer) {
+          showPastaImage(timer);
+        }
+      });
+    </script>
   </body>
 </html>
