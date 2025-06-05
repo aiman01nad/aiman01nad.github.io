@@ -14,20 +14,24 @@
         border-radius: 12px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       }
+
       table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 1rem;
       }
+
       th,
       td {
         text-align: left;
         padding: 0.5rem;
         border-bottom: 1px solid #ccc;
       }
+
       input[type="number"] {
         width: 60px;
       }
+
       button {
         background: #f4d35e;
         border: none;
@@ -36,16 +40,25 @@
         border-radius: 8px;
         cursor: pointer;
       }
+
       .pasta-gallery {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 1rem;
         margin: 2rem 0;
+        text-align: center;
       }
+
       .pasta-gallery img {
         width: 100%;
         border-radius: 8px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .pasta-gallery .label {
+        margin-top: 0.3rem;
+        font-size: 0.9rem;
+        font-weight: 500;
       }
     </style>
     <script type="module">
@@ -77,7 +90,7 @@
         penne: 11,
         fusilli: 10,
         tagliatelle: 8,
-        test: 0.15
+        test: 0.15,
       };
 
       const pastaTable = document.createElement("table");
@@ -162,10 +175,22 @@
       <h2>Edit Your Pasta Times</h2>
 
       <div class="pasta-gallery">
-        <img src="images/spaghetti.jpg" alt="Spaghetti" />
-        <img src="images/penne.jpg" alt="Penne" />
-        <img src="images/fusilli.jpg" alt="Fusilli" />
-        <img src="images/tagliatelle.jpg" alt="Tagliatelle" />
+        <div>
+          <img src="images/spaghetti.jpg" alt="Spaghetti" />
+          <div class="label">Spaghetti</div>
+        </div>
+        <div>
+          <img src="images/penne.jpg" alt="Penne" />
+          <div class="label">Penne</div>
+        </div>
+        <div>
+          <img src="images/fusilli.jpg" alt="Fusilli" />
+          <div class="label">Fusilli</div>
+        </div>
+        <div>
+          <img src="images/tagliatelle.jpg" alt="Tagliatelle" />
+          <div class="label">Tagliatelle</div>
+        </div>
       </div>
 
       <div id="table-holder"></div>
