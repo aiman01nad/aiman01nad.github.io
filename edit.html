@@ -36,16 +36,28 @@
         border-radius: 8px;
         cursor: pointer;
       }
+      .pasta-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      .pasta-gallery img {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
     </style>
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-      // If you want to use other Firebase products, import them as needed
-      // https://firebase.google.com/docs/web/setup#available-libraries
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+      } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
         apiKey: "AIzaSyDwCr7eaBZ9LS-ZAiE6cjpAlg4txN7ares",
         authDomain: "pastatimer-25.firebaseapp.com",
@@ -56,21 +68,10 @@
         measurementId: "G-DBSR4R4B0Y",
       };
 
-      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-
-      // Firebase imports
-      import {
-        getFirestore,
-        doc,
-        getDoc,
-        setDoc,
-      } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
-
       const db = getFirestore(app);
 
-      // Default pasta times (used if no data in Firestore)
       const defaultPastaMap = {
         spaghetti: 9,
         penne: 11,
@@ -112,7 +113,6 @@
         await loadTimers();
       }
 
-      // Add pasta type functionality
       document.addEventListener("DOMContentLoaded", () => {
         const addForm = document.getElementById("addPastaForm");
         addForm.onsubmit = async (e) => {
@@ -128,7 +128,6 @@
             alert("Please enter a valid pasta name and time.");
             return;
           }
-          // Get current data
           const docRef = doc(db, "timers", "pasta");
           const snap = await getDoc(docRef);
           const data = snap.exists() ? snap.data() : {};
@@ -161,7 +160,16 @@
 
     <main class="editor-container">
       <h2>Edit Your Pasta Times</h2>
+
+      <div class="pasta-gallery">
+        <img src="images/spaghetti.jpg" alt="Spaghetti" />
+        <img src="images/penne.jpg" alt="Penne" />
+        <img src="images/fusilli.jpg" alt="Fusilli" />
+        <img src="images/tagliatelle.jpg" alt="Tagliatelle" />
+      </div>
+
       <div id="table-holder"></div>
+
       <form id="addPastaForm" style="margin-bottom: 1rem">
         <input
           type="text"
@@ -180,6 +188,7 @@
         />
         <button type="submit">Add Pasta</button>
       </form>
+
       <button id="saveBtn">Save</button>
     </main>
 
