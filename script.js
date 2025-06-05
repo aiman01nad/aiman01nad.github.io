@@ -104,8 +104,22 @@ window.onload = async function () {
 
   if (timer && pastaMap[timer.toLowerCase()]) {
     startTimer(timer, pastaMap[timer.toLowerCase()]);
+    showPastaImage(timer.toLowerCase());
   }
 };
+
+function showPastaImage(pasta) {
+  const photoContainer = document.getElementById("pastaPhoto");
+  const knownPastas = ["spaghetti", "penne", "fusilli", "tagliatelle"];
+  if (knownPastas.includes(pasta)) {
+    photoContainer.innerHTML = `
+      <img src="images/${pasta}.jpg" alt="${pasta}" />
+      <span>${pasta.charAt(0).toUpperCase() + pasta.slice(1)}</span>
+    `;
+  } else {
+    photoContainer.innerHTML = "";
+  }
+}
 
 function playBeep() {
   const sound = document.getElementById("doneSound");
