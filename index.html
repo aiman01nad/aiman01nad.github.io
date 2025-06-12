@@ -5,24 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pasta Timer</title>
     <link rel="stylesheet" href="style.css" />
-    <style>
-      .pasta-image {
-        text-align: center;
-        margin-top: 1rem;
-      }
-
-      .pasta-image img {
-        max-width: 200px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      }
-
-      .pasta-image .label {
-        margin-top: 0.5rem;
-        font-size: 1rem;
-        font-weight: 500;
-      }
-    </style>
   </head>
   <body>
     <header>
@@ -34,16 +16,16 @@
 
     <main>
       <section class="hero">
-        <h1 id="title">Pasta Timer</h1>
+        <div style="display: flex; align-items: center; gap: 1rem">
+          <div id="pastaPhoto" class="pasta-image">
+            <img id="pastaImg" src="" alt="" />
+          </div>
+          <h1 id="title">Pasta Timer</h1>
+        </div>
         <p class="subtitle">
           Perfect pasta, every time. Scan your tag, cook it right.
         </p>
       </section>
-
-      <div id="pastaPhoto" class="pasta-image" style="display: none">
-        <img id="pastaImg" src="" alt="" />
-        <div class="label" id="pastaLabel"></div>
-      </div>
 
       <section class="timer-section">
         <div class="timer-container">
@@ -97,11 +79,9 @@
       // Display pasta image and label
       function showPastaImage(pastaName) {
         const img = document.getElementById("pastaImg");
-        const label = document.getElementById("pastaLabel");
         const container = document.getElementById("pastaPhoto");
-        img.src = `images/${pastaName.toLowerCase()}.jpg`;
+        img.src = `images/${pastaName.toLowerCase()}.svg`;
         img.alt = pastaName;
-        label.textContent = pastaName.charAt(0).toUpperCase() + pastaName.slice(1);
         container.style.display = "block";
       }
 

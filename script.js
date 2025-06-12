@@ -20,7 +20,9 @@ function startTimer(pasta, minutes, resume = false) {
   const pausePlayBtn = document.getElementById("pausePlayBtn");
   const restartBtn = document.getElementById("restartBtn");
   const doneSound = document.getElementById("doneSound");
-  title.textContent = `${pasta} cooking...`;
+  title.textContent = `${
+    pasta.charAt(0).toUpperCase() + pasta.slice(1)
+  } cooking...`;
   pausePlayBtn.style.display = "inline-block";
   restartBtn.style.display = "inline-block";
   pausePlayBtn.textContent = "Pause";
@@ -91,7 +93,9 @@ async function fetchPastaMap() {
   const fields = json.fields || {};
   const result = {};
   for (let [key, val] of Object.entries(fields)) {
-    result[key] = parseFloat(val.doubleValue || val.integerValue || "0");
+    result[key.toLowerCase()] = parseFloat(
+      val.doubleValue || val.integerValue || "0"
+    );
   }
   return result;
 }

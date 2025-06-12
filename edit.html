@@ -99,9 +99,16 @@
         pastaTable.innerHTML = `<tr><th>Pasta Type</th><th>Minutes</th></tr>`;
         for (const [key, time] of Object.entries(data)) {
           const row = document.createElement("tr");
+          // Lowercase key for image filename
+          const imgName = key.toLowerCase();
           row.innerHTML = `
-            <td>${key}</td>
-            <td><input type="number" step="1" value="${time}" data-pasta="${key}" /></td>
+            <td>
+              <img src="images/${imgName}.svg" alt="${key}" style="width:32px;vertical-align:middle;margin-right:8px;">
+              ${key}
+            </td>
+            <td>
+              <input type="number" step="1" min="1" value="${time}" data-pasta="${key}" />
+            </td>
           `;
           pastaTable.appendChild(row);
         }
@@ -126,36 +133,6 @@
         await loadTimers();
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const addForm = document.getElementById("addPastaForm");
-        addForm.onsubmit = async (e) => {
-          e.preventDefault();
-          const name = document
-            .getElementById("newPastaName")
-            .value.trim()
-            .toLowerCase();
-          const time = parseFloat(
-            document.getElementById("newPastaTime").value
-          );
-          if (!name || isNaN(time)) {
-            alert("Please enter a valid pasta name and time.");
-            return;
-          }
-          const docRef = doc(db, "timers", "pasta");
-          const snap = await getDoc(docRef);
-          const data = snap.exists() ? snap.data() : {};
-          if (data[name]) {
-            alert("That pasta type already exists.");
-            return;
-          }
-          data[name] = time;
-          await setDoc(docRef, data);
-          document.getElementById("newPastaName").value = "";
-          document.getElementById("newPastaTime").value = "";
-          await loadTimers();
-        };
-      });
-
       window.onload = async () => {
         document.getElementById("table-holder").appendChild(pastaTable);
         await loadTimers();
@@ -174,45 +151,7 @@
     <main class="editor-container">
       <h2>Edit Your Pasta Times</h2>
 
-      <div class="pasta-gallery">
-        <div>
-          <img src="images/spaghetti.jpg" alt="Spaghetti" />
-          <div class="label">Spaghetti</div>
-        </div>
-        <div>
-          <img src="images/penne.jpg" alt="Penne" />
-          <div class="label">Penne</div>
-        </div>
-        <div>
-          <img src="images/fusilli.jpg" alt="Fusilli" />
-          <div class="label">Fusilli</div>
-        </div>
-        <div>
-          <img src="images/tagliatelle.jpg" alt="Tagliatelle" />
-          <div class="label">Tagliatelle</div>
-        </div>
-      </div>
-
       <div id="table-holder"></div>
-
-      <form id="addPastaForm" style="margin-bottom: 1rem">
-        <input
-          type="text"
-          id="newPastaName"
-          placeholder="New pasta type"
-          required
-          style="width: 140px"
-        />
-        <input
-          type="number"
-          id="newPastaTime"
-          placeholder="Minutes"
-          step="0.1"
-          required
-          style="width: 80px"
-        />
-        <button type="submit">Add Pasta</button>
-      </form>
 
       <button id="saveBtn">Save</button>
     </main>
