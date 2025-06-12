@@ -2,21 +2,22 @@ body {
   font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
-  background: #fff7eb;
-  color: #333;
+  background: #fff8e6;
+  color: #3e3e3e;
+  text-align: center;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffeedb;
-  padding: 1rem 2rem;
+  background: #f8ecd5;
+  padding: 1rem 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: inherit;
   text-decoration: none;
@@ -39,15 +40,16 @@ header {
 }
 
 nav a {
-  margin-left: 1.5rem;
   text-decoration: none;
   color: #e94f37;
-  font-weight: 500;
 }
 
 .hero {
   text-align: center;
-  padding: 3rem 2rem 2rem;
+  padding: 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .subtitle {
@@ -80,16 +82,17 @@ nav a {
   pointer-events: none;
 }
 
-.buttons button {
+button {
   margin: 0.5rem;
   padding: 1rem 2rem;
   font-size: 1rem;
-  background: #f4d35e;
+  background: #f4c542;
   color: #333;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: 0.3s;
+  width: 8rem;
 }
 
 .buttons button:hover {
@@ -98,50 +101,51 @@ nav a {
 
 footer {
   text-align: center;
-  margin-top: 4rem;
-  padding: 2rem;
-  background: #ffeedb;
+  margin-top: 1.5rem;
+  padding: 0.5rem;
+  background: #f8ecd5;
   color: #666;
   font-size: 0.9rem;
 }
 
 /* NEW: Pasta photo with label */
-.pasta-photo {
+#pastaPhoto {
   text-align: center;
-  margin: 2rem 0;
 }
 
-.pasta-photo img {
-  width: 200px;
+#pastaPhoto img {
+  width: 3rem;
+}
+
+.editor-container {
+  max-width: 500px;
+  margin: 2rem auto 0 auto;
+  background: #f8ecd5;
+  padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.pasta-photo span {
+#saveBtn {
+  width: 6rem;
   display: block;
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #444;
-}
-
-/* Gallery (edit.html) */
-.pasta-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
+  margin: 0 4rem 0 auto;
   text-align: center;
 }
 
-.pasta-gallery img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+#pastaDropdown {
+  width: 25%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #fff8e6;
 }
 
-.pasta-gallery .label {
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
-  font-weight: 500;
+@media (max-width: 600px) {
+  .logo {
+    font-size: 1rem;
+  }
+
+  a {
+    font-size: 1rem;
+  }
 }
