@@ -6,15 +6,6 @@
     <title>Edit Pasta Timers</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      .editor-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        background: #fff7eb;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
-
       table {
         width: 100%;
         border-collapse: collapse;
@@ -23,42 +14,13 @@
 
       th,
       td {
-        text-align: left;
+        text-align: center;
         padding: 0.5rem;
         border-bottom: 1px solid #ccc;
       }
 
       input[type="number"] {
-        width: 60px;
-      }
-
-      button {
-        background: #f4d35e;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .pasta-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin: 2rem 0;
-        text-align: center;
-      }
-
-      .pasta-gallery img {
-        width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      }
-
-      .pasta-gallery .label {
-        margin-top: 0.3rem;
-        font-size: 0.9rem;
-        font-weight: 500;
+        width: 50%;
       }
     </style>
     <script type="module">
@@ -124,10 +86,26 @@
       async function saveTimers() {
         const inputs = document.querySelectorAll("input[data-pasta]");
         const updated = {};
+        let invalid = false;
+
         inputs.forEach((input) => {
           const pasta = input.dataset.pasta;
-          updated[pasta] = parseFloat(input.value);
+          const value = parseFloat(input.value);
+
+          if (isNaN(value) || value <= 0) {
+            invalid = true;
+          } else {
+            updated[pasta] = value;
+          }
         });
+
+        if (invalid) {
+          alert(
+            "Please enter valid cooking times (greater than 0 minutes) for all pastas."
+          );
+          return;
+        }
+
         await setDoc(doc(db, "timers", "pasta"), updated);
         alert("Saved!");
         await loadTimers();
@@ -142,9 +120,14 @@
   </head>
   <body>
     <header>
-      <a href="index.html" class="logo">🍝 PastaTimer</a>
+      <a href="#" onclick="history.back(); return false;" class="logo"
+        >🍝 PastaTimer</a
+      >
+      <select id="pastaDropdown">
+        <option value="">Timers</option>
+      </select>
       <nav>
-        <a href="index.html">Back to Timer</a>
+        <a href="#" onclick="history.back(); return false;">Back to Timer</a>
       </nav>
     </header>
 
@@ -153,11 +136,41 @@
 
       <div id="table-holder"></div>
 
-      <button id="saveBtn">Save</button>
+      <button id="saveBtn" class="buttons">Save</button>
     </main>
 
     <footer>
       <p>Custom pasta times are stored in the cloud ☁️</p>
     </footer>
+
+    <script>
+      async function fetchPastaKeys() {
+        const res = await fetch(
+          "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
+        );
+        const json = await res.json();
+        const fields = json.fields || {};
+        return Object.keys(fields);
+      }
+
+      async function populateDropdown() {
+        const dropdown = document.getElementById("pastaDropdown");
+        if (!dropdown) return;
+        const keys = await fetchPastaKeys();
+        keys.forEach((key) => {
+          const opt = document.createElement("option");
+          opt.value = key.toLowerCase();
+          opt.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+          dropdown.appendChild(opt);
+        });
+        dropdown.onchange = function () {
+          if (this.value) {
+            window.location.href = `index.html?timer=${this.value}`;
+          }
+        };
+      }
+
+      populateDropdown();
+    </script>
   </body>
 </html>
