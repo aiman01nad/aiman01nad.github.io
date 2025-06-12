@@ -20,9 +20,8 @@ function startTimer(pasta, minutes, resume = false) {
   const pausePlayBtn = document.getElementById("pausePlayBtn");
   const restartBtn = document.getElementById("restartBtn");
   const doneSound = document.getElementById("doneSound");
-  title.textContent = `${
-    pasta.charAt(0).toUpperCase() + pasta.slice(1)
-  } cooking...`;
+  title.textContent = `${pasta.charAt(0).toUpperCase() + pasta.slice(1)
+    } cooking...`;
   pausePlayBtn.style.display = "inline-block";
   restartBtn.style.display = "inline-block";
   pausePlayBtn.textContent = "Pause";
@@ -49,7 +48,6 @@ function startTimer(pasta, minutes, resume = false) {
       pausePlayBtn.style.display = "none";
       restartBtn.style.display = "inline-block";
       setCircleProgress(1);
-      playBeep();
       if (navigator.vibrate) {
         navigator.vibrate([300, 100, 300]);
       }
@@ -123,9 +121,4 @@ function showPastaImage(pasta) {
   } else {
     photoContainer.innerHTML = "";
   }
-}
-
-function playBeep() {
-  const sound = document.getElementById("doneSound");
-  sound.play();
 }
