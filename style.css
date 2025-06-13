@@ -149,3 +149,20 @@ footer {
     font-size: 1rem;
   }
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+input[type="number"] {
+  width: 50%;
+}

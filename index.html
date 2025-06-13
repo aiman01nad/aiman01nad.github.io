@@ -15,6 +15,9 @@
       <nav>
         <a href="edit.html">Edit my timers</a>
       </nav>
+      <button id="loginBtn">Login</button>
+      <button id="logoutBtn" style="display:none;">Logout</button>
+      <span id="userEmail"></span>
     </header>
 
     <main>
@@ -123,6 +126,58 @@
       }
 
       populateDropdown();
+    </script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+        onAuthStateChanged
+      } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyDwCr7eaBZ9LS-ZAiE6cjpAlg4txN7ares",
+        authDomain: "pastatimer-25.firebaseapp.com",
+        projectId: "pastatimer-25",
+        storageBucket: "pastatimer-25.firebasestorage.app",
+        messagingSenderId: "889344281638",
+        appId: "1:889344281638:web:883c830c9bc55753d1aae7",
+        measurementId: "G-DBSR4R4B0Y",
+      };
+      
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth(app);
+      
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const userEmail = document.getElementById("userEmail");
+      
+      loginBtn.onclick = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider);
+      };
+      
+      logoutBtn.onclick = () => {
+        signOut(auth);
+      };
+      
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+          userEmail.textContent = user.email;
+          // Optionally: load user-specific timers here
+        } else {
+          loginBtn.style.display = "inline-block";
+          logoutBtn.style.display = "none";
+          userEmail.textContent = "";
+          // Optionally: load default timers here
+        }
+      });
     </script>
   </body>
 </html>

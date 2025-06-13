@@ -43,7 +43,8 @@ function startTimer(pasta, minutes, resume = false) {
     if (remainingSeconds <= 0) {
       clearInterval(countdown);
       timerDisplay.textContent = "🍝";
-      title.textContent = `${pasta} is ready!`;
+      title.textContent = `${pasta.charAt(0).toUpperCase() + pasta.slice(1)
+        } is ready!`;
       doneSound.play();
       pausePlayBtn.style.display = "none";
       restartBtn.style.display = "inline-block";
