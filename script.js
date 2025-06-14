@@ -20,11 +20,12 @@ function startTimer(pasta, minutes, resume = false) {
   const pausePlayBtn = document.getElementById("pausePlayBtn");
   const restartBtn = document.getElementById("restartBtn");
   const doneSound = document.getElementById("doneSound");
-  title.textContent = `${pasta.charAt(0).toUpperCase() + pasta.slice(1)
-    } cooking...`;
+  title.textContent = `${
+    pasta.charAt(0).toUpperCase() + pasta.slice(1)
+  } cooking...`;
   pausePlayBtn.style.display = "inline-block";
   restartBtn.style.display = "inline-block";
-  pausePlayBtn.textContent = "Pause";
+  pausePlayBtn.textContent = "||";
   paused = false;
 
   currentPasta = pasta;
@@ -43,8 +44,9 @@ function startTimer(pasta, minutes, resume = false) {
     if (remainingSeconds <= 0) {
       clearInterval(countdown);
       timerDisplay.textContent = "🍝";
-      title.textContent = `${pasta.charAt(0).toUpperCase() + pasta.slice(1)
-        } is ready!`;
+      title.textContent = `${
+        pasta.charAt(0).toUpperCase() + pasta.slice(1)
+      } is ready!`;
       doneSound.play();
       pausePlayBtn.style.display = "none";
       restartBtn.style.display = "inline-block";
@@ -69,18 +71,18 @@ document.getElementById("pausePlayBtn").onclick = function () {
   if (!paused) {
     paused = true;
     clearInterval(countdown);
-    pausePlayBtn.textContent = "Play";
+    pausePlayBtn.textContent = "▷";
   } else {
     paused = false;
     endTime = Date.now() + remainingSeconds * 1000;
-    pausePlayBtn.textContent = "Pause";
+    pausePlayBtn.textContent = " ||";
     startTimer(currentPasta, currentMinutes, true);
   }
 };
 
 document.getElementById("restartBtn").onclick = function () {
   paused = false;
-  document.getElementById("pausePlayBtn").textContent = "Pause";
+  document.getElementById("pausePlayBtn").textContent = "||";
   startTimer(currentPasta, currentMinutes);
 };
 
@@ -113,10 +115,10 @@ window.onload = async function () {
 
 function showPastaImage(pasta) {
   const photoContainer = document.getElementById("pastaPhoto");
-  const knownPastas = ["spaghetti", "penne", "fusilli", "tagliatelle"];
+  const knownPastas = ["spaghetti", "penne", "fusilli", "farfalle"];
   if (knownPastas.includes(pasta)) {
     photoContainer.innerHTML = `
-      <img src="images/${pasta}.jpg" alt="${pasta}" />
+      <img src="images/${pasta}.svg" alt="${pasta}" />
       <span>${pasta.charAt(0).toUpperCase() + pasta.slice(1)}</span>
     `;
   } else {
