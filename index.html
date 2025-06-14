@@ -20,10 +20,10 @@
     <main>
       <section class="hero">
         <div style="display: flex; align-items: center; gap: 1rem">
-          <div id="pastaPhoto" class="pasta-image">
+          <div id="pastaPhoto" class="pasta-image" style="display: none">
             <img id="pastaImg" src="" alt="" />
           </div>
-          <h1 id="title">Pasta Timer</h1>
+          <h1 id="title">PastaTimer</h1>
         </div>
         <p class="subtitle">
           Perfect pasta, every time. Scan your tag, cook it right.
@@ -86,7 +86,7 @@
       import {
         getAuth,
         GoogleAuthProvider,
-        signInWithPopup,
+        signInWithRedirect,
         signOut,
         onAuthStateChanged,
       } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
@@ -112,7 +112,7 @@
 
       loginBtn.onclick = () => {
         const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider);
+        signInWithRedirect(auth, provider);
       };
 
       logoutBtn.onclick = () => {
