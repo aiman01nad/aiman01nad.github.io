@@ -119,7 +119,6 @@ function showPastaImage(pasta) {
   if (knownPastas.includes(pasta)) {
     photoContainer.innerHTML = `
       <img src="images/${pasta}.svg" alt="${pasta}" />
-      <span>${pasta.charAt(0).toUpperCase() + pasta.slice(1)}</span>
     `;
   } else {
     photoContainer.innerHTML = "";
