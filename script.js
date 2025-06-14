@@ -86,10 +86,16 @@ document.getElementById("restartBtn").onclick = function () {
   startTimer(currentPasta, currentMinutes);
 };
 
-async function fetchPastaMap() {
-  const docRef = await fetch(
-    "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
-  );
+async function fetchPastaMap(userId) {
+  let url;
+
+  if (userId) {
+    url = `https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/user_timers/${userId}`;
+  } else {
+    url =
+      "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta";
+  }
+  const docRef = await fetch(url);
   const json = await docRef.json();
   const fields = json.fields || {};
   const result = {};
@@ -102,10 +108,18 @@ async function fetchPastaMap() {
 }
 
 window.onload = async function () {
+  // Wait for Firebase Auth to be ready if available
+  let userId = null;
+  if (window.firebaseAuth) {
+    // Firebase Auth is loaded as a global in index.html
+    userId = window.firebaseAuth.currentUser
+      ? window.firebaseAuth.currentUser.uid
+      : null;
+  }
   const params = new URLSearchParams(window.location.search);
   const timer = params.get("timer");
 
-  const pastaMap = await fetchPastaMap();
+  const pastaMap = await fetchPastaMap(userId);
 
   if (timer && pastaMap[timer.toLowerCase()]) {
     startTimer(timer, pastaMap[timer.toLowerCase()]);
