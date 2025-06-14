@@ -17,7 +17,7 @@
       import {
         getAuth,
         GoogleAuthProvider,
-        signInWithRedirect,
+        signInWithPopup,
         signOut,
         onAuthStateChanged,
       } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
@@ -43,7 +43,7 @@
 
       loginBtn.onclick = () => {
         const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
+        signInWithPopup(auth, provider);
       };
 
       logoutBtn.onclick = () => {
