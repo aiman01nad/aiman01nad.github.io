@@ -77,20 +77,24 @@
         spaghetti: 9,
         penne: 11,
         fusilli: 10,
-        tagliatelle: 8,
+        farfalle: 8,
       };
 
       const pastaTable = document.createElement("table");
 
       function renderTable(data) {
         pastaTable.innerHTML = `<tr><th>Pasta Type</th><th>Minutes</th></tr>`;
-        for (const [key, time] of Object.entries(data)) {
+        // Sort keys alphabetically (case-insensitive)
+        const sortedKeys = Object.keys(data).sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base" })
+        );
+        for (const key of sortedKeys) {
+          const time = data[key];
           const row = document.createElement("tr");
-          const imgName = key.toLowerCase();
           row.innerHTML = `
             <td>
-              <img src="images/${imgName}.svg" alt="${key}" style="width:32px;vertical-align:middle;margin-right:8px;">
-              ${key}
+              <img src="images/${key.toLowerCase()}.svg" alt="${key}" style="width:32px;vertical-align:middle;margin-right:8px;">
+              ${key.charAt(0).toUpperCase() + key.slice(1)}
             </td>
             <td>
               <input type="number" step="1" min="1" value="${time}" data-pasta="${key}" />
