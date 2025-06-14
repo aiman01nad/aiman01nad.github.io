@@ -79,52 +79,7 @@
     <audio id="doneSound" src="media/ding.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
-    <script>
-      // Display pasta image and label
-      function showPastaImage(pastaName) {
-        const img = document.getElementById("pastaImg");
-        const container = document.getElementById("pastaPhoto");
-        img.src = `images/${pastaName.toLowerCase()}.svg`;
-        img.alt = pastaName;
-        container.style.display = "block";
-      }
 
-      window.addEventListener("load", () => {
-        const params = new URLSearchParams(window.location.search);
-        const timer = params.get("timer");
-        if (timer) {
-          showPastaImage(timer);
-        }
-      });
-
-      async function fetchPastaKeys() {
-        const res = await fetch(
-          "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
-        );
-        const json = await res.json();
-        const fields = json.fields || {};
-        return Object.keys(fields);
-      }
-
-      async function populateDropdown() {
-        const dropdown = document.getElementById("pastaDropdown");
-        if (!dropdown) return;
-        const keys = await fetchPastaKeys();
-        keys.forEach((key) => {
-          const opt = document.createElement("option");
-          opt.value = key.toLowerCase();
-          opt.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-          dropdown.appendChild(opt);
-        });
-        dropdown.onchange = function () {
-          if (this.value) {
-            window.location.href = `index.html?timer=${this.value}`;
-          }
-        };
-      }
-
-      populateDropdown();
-    </script>
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
@@ -176,6 +131,50 @@
           // Optionally: load default timers here
         }
       });
+      // Display pasta image and label
+      function showPastaImage(pastaName) {
+        const img = document.getElementById("pastaImg");
+        const container = document.getElementById("pastaPhoto");
+        img.src = `images/${pastaName.toLowerCase()}.svg`;
+        img.alt = pastaName;
+        container.style.display = "block";
+      }
+
+      window.addEventListener("load", () => {
+        const params = new URLSearchParams(window.location.search);
+        const timer = params.get("timer");
+        if (timer) {
+          showPastaImage(timer);
+        }
+      });
+
+      async function fetchPastaKeys() {
+        const res = await fetch(
+          "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
+        );
+        const json = await res.json();
+        const fields = json.fields || {};
+        return Object.keys(fields);
+      }
+
+      async function populateDropdown() {
+        const dropdown = document.getElementById("pastaDropdown");
+        if (!dropdown) return;
+        const keys = await fetchPastaKeys();
+        keys.forEach((key) => {
+          const opt = document.createElement("option");
+          opt.value = key.toLowerCase();
+          opt.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+          dropdown.appendChild(opt);
+        });
+        dropdown.onchange = function () {
+          if (this.value) {
+            window.location.href = `index.html?timer=${this.value}`;
+          }
+        };
+      }
+
+      populateDropdown();
     </script>
   </body>
 </html>
