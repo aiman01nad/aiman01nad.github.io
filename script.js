@@ -25,7 +25,7 @@ function startTimer(pasta, minutes, resume = false) {
   } cooking...`;
   pausePlayBtn.style.display = "inline-block";
   restartBtn.style.display = "inline-block";
-  pausePlayBtn.textContent = "Pause";
+  pausePlayBtn.textContent = "||";
   paused = false;
 
   currentPasta = pasta;
@@ -44,12 +44,13 @@ function startTimer(pasta, minutes, resume = false) {
     if (remainingSeconds <= 0) {
       clearInterval(countdown);
       timerDisplay.textContent = "🍝";
-      title.textContent = `${pasta} is ready!`;
+      title.textContent = `${
+        pasta.charAt(0).toUpperCase() + pasta.slice(1)
+      } is ready!`;
       doneSound.play();
       pausePlayBtn.style.display = "none";
       restartBtn.style.display = "inline-block";
       setCircleProgress(1);
-      playBeep();
       if (navigator.vibrate) {
         navigator.vibrate([300, 100, 300]);
       }
@@ -70,25 +71,31 @@ document.getElementById("pausePlayBtn").onclick = function () {
   if (!paused) {
     paused = true;
     clearInterval(countdown);
-    pausePlayBtn.textContent = "Play";
+    pausePlayBtn.textContent = "▷";
   } else {
     paused = false;
     endTime = Date.now() + remainingSeconds * 1000;
-    pausePlayBtn.textContent = "Pause";
+    pausePlayBtn.textContent = " ||";
     startTimer(currentPasta, currentMinutes, true);
   }
 };
 
 document.getElementById("restartBtn").onclick = function () {
   paused = false;
-  document.getElementById("pausePlayBtn").textContent = "Pause";
+  document.getElementById("pausePlayBtn").textContent = "||";
   startTimer(currentPasta, currentMinutes);
 };
 
-async function fetchPastaMap() {
-  const docRef = await fetch(
-    "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
-  );
+async function fetchPastaMap(userId) {
+  let url;
+
+  if (userId) {
+    url = `https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/user_timers/${userId}`;
+  } else {
+    url =
+      "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta";
+  }
+  const docRef = await fetch(url);
   const json = await docRef.json();
   const fields = json.fields || {};
   const result = {};
@@ -101,10 +108,18 @@ async function fetchPastaMap() {
 }
 
 window.onload = async function () {
+  // Wait for Firebase Auth to be ready if available
+  let userId = null;
+  if (window.firebaseAuth) {
+    // Firebase Auth is loaded as a global in index.html
+    userId = window.firebaseAuth.currentUser
+      ? window.firebaseAuth.currentUser.uid
+      : null;
+  }
   const params = new URLSearchParams(window.location.search);
   const timer = params.get("timer");
 
-  const pastaMap = await fetchPastaMap();
+  const pastaMap = await fetchPastaMap(userId);
 
   if (timer && pastaMap[timer.toLowerCase()]) {
     startTimer(timer, pastaMap[timer.toLowerCase()]);
@@ -114,18 +129,12 @@ window.onload = async function () {
 
 function showPastaImage(pasta) {
   const photoContainer = document.getElementById("pastaPhoto");
-  const knownPastas = ["spaghetti", "penne", "fusilli", "tagliatelle"];
+  const knownPastas = ["spaghetti", "penne", "fusilli", "farfalle"];
   if (knownPastas.includes(pasta)) {
     photoContainer.innerHTML = `
-      <img src="images/${pasta}.jpg" alt="${pasta}" />
-      <span>${pasta.charAt(0).toUpperCase() + pasta.slice(1)}</span>
+      <img src="images/${pasta}.svg" alt="${pasta}" />
     `;
   } else {
     photoContainer.innerHTML = "";
   }
-}
-
-function playBeep() {
-  const sound = document.getElementById("doneSound");
-  sound.play();
 }

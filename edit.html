@@ -3,26 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Pasta Timers</title>
+    <title>Edit PastaTimers</title>
     <link rel="stylesheet" href="style.css" />
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 1rem;
-      }
-
-      th,
-      td {
-        text-align: center;
-        padding: 0.5rem;
-        border-bottom: 1px solid #ccc;
-      }
-
-      input[type="number"] {
-        width: 50%;
-      }
-    </style>
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
@@ -32,6 +14,13 @@
         getDoc,
         setDoc,
       } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyDwCr7eaBZ9LS-ZAiE6cjpAlg4txN7ares",
@@ -46,27 +35,66 @@
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
       const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const userEmail = document.getElementById("userEmail");
+
+      loginBtn.onclick = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider);
+      };
+
+      logoutBtn.onclick = () => {
+        signOut(auth);
+      };
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+          userEmail.textContent = user.email;
+          await loadTimers();
+        } else {
+          loginBtn.style.display = "inline-block";
+          logoutBtn.style.display = "none";
+          userEmail.textContent = "";
+          await loadTimers();
+        }
+      });
+
+      async function saveUserTimers(userId, data) {
+        await setDoc(doc(db, "user_timers", userId), data);
+      }
+
+      async function loadUserTimers(userId) {
+        const snap = await getDoc(doc(db, "user_timers", userId));
+        return snap.exists() ? snap.data() : null;
+      }
 
       const defaultPastaMap = {
         spaghetti: 9,
         penne: 11,
         fusilli: 10,
-        tagliatelle: 8,
-        test: 0.15,
+        farfalle: 8,
       };
 
       const pastaTable = document.createElement("table");
 
       function renderTable(data) {
         pastaTable.innerHTML = `<tr><th>Pasta Type</th><th>Minutes</th></tr>`;
-        for (const [key, time] of Object.entries(data)) {
+        // Sort keys alphabetically (case-insensitive)
+        const sortedKeys = Object.keys(data).sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base" })
+        );
+        for (const key of sortedKeys) {
+          const time = data[key];
           const row = document.createElement("tr");
-          // Lowercase key for image filename
-          const imgName = key.toLowerCase();
           row.innerHTML = `
             <td>
-              <img src="images/${imgName}.svg" alt="${key}" style="width:32px;vertical-align:middle;margin-right:8px;">
-              ${key}
+              <img src="images/${key.toLowerCase()}.svg" alt="${key}" style="width:32px;vertical-align:middle;margin-right:8px;">
+              ${key.charAt(0).toUpperCase() + key.slice(1)}
             </td>
             <td>
               <input type="number" step="1" min="1" value="${time}" data-pasta="${key}" />
@@ -77,9 +105,22 @@
       }
 
       async function loadTimers() {
-        const docRef = doc(db, "timers", "pasta");
-        const snap = await getDoc(docRef);
-        const data = snap.exists() ? snap.data() : defaultPastaMap;
+        const user = auth.currentUser;
+        let data = null;
+        if (user) {
+          data = await loadUserTimers(user.uid);
+          // If user_timers is missing or empty, fall back to shared timers
+          if (!data || Object.keys(data).length === 0) {
+            const docRef = doc(db, "timers", "pasta");
+            const snap = await getDoc(docRef);
+            data = snap.exists() ? snap.data() : defaultPastaMap;
+          }
+        } else {
+          // fallback to shared/public timers
+          const docRef = doc(db, "timers", "pasta");
+          const snap = await getDoc(docRef);
+          data = snap.exists() ? snap.data() : defaultPastaMap;
+        }
         renderTable(data);
       }
 
@@ -106,7 +147,13 @@
           return;
         }
 
-        await setDoc(doc(db, "timers", "pasta"), updated);
+        // Save to user-specific Firestore document
+        const user = auth.currentUser;
+        if (!user) {
+          alert("You must be logged in to save your pasta times!");
+          return;
+        }
+        await saveUserTimers(user.uid, updated);
         alert("Saved!");
         await loadTimers();
       }
@@ -132,11 +179,20 @@
     </header>
 
     <main class="editor-container">
-      <h2>Edit Your Pasta Times</h2>
+      <h2>Edit the Pasta Timers</h2>
 
       <div id="table-holder"></div>
 
-      <button id="saveBtn" class="buttons">Save</button>
+      <div id="loginAndSave">
+        <div class="button-row">
+          <button id="loginBtn" class="buttons">Login</button>
+          <button id="logoutBtn" class="buttons" style="display: none">
+            Logout
+          </button>
+          <button id="saveBtn" class="buttons">Save</button>
+        </div>
+        <span id="userEmail"></span>
+      </div>
     </main>
 
     <footer>
@@ -144,19 +200,25 @@
     </footer>
 
     <script>
-      async function fetchPastaKeys() {
-        const res = await fetch(
-          "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta"
-        );
+      async function fetchPastaKeys(userId) {
+        let url;
+        if (userId) {
+          url = `https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/user_timers/${userId}`;
+        } else {
+          url =
+            "https://firestore.googleapis.com/v1/projects/pastatimer-25/databases/(default)/documents/timers/pasta";
+        }
+        const res = await fetch(url);
         const json = await res.json();
         const fields = json.fields || {};
         return Object.keys(fields);
       }
 
-      async function populateDropdown() {
+      async function populateDropdown(userId) {
         const dropdown = document.getElementById("pastaDropdown");
         if (!dropdown) return;
-        const keys = await fetchPastaKeys();
+        dropdown.innerHTML = `<option value="">Timers</option>`;
+        const keys = await fetchPastaKeys(userId);
         keys.forEach((key) => {
           const opt = document.createElement("option");
           opt.value = key.toLowerCase();
@@ -170,7 +232,16 @@
         };
       }
 
-      populateDropdown();
+      // Wait for Firebase Auth to be ready and then use userId
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.firebase && window.firebase.auth) {
+          window.firebase.auth().onAuthStateChanged((user) => {
+            populateDropdown(user ? user.uid : null);
+          });
+        } else {
+          populateDropdown(null);
+        }
+      });
     </script>
   </body>
 </html>
