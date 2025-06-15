@@ -9,6 +9,7 @@ let totalSeconds = 0;
 function setCircleProgress(percent) {
   const circle = document.getElementById("progressBar");
   const circumference = 2 * Math.PI * 60;
+  percent = Math.max(0, percent);
   const offset = circumference * (1 - percent);
   circle.style.strokeDashoffset = offset;
 }
@@ -124,6 +125,25 @@ window.onload = async function () {
   if (timer && pastaMap[timer.toLowerCase()]) {
     startTimer(timer, pastaMap[timer.toLowerCase()]);
     showPastaImage(timer.toLowerCase());
+  }
+  const plusBtn = document.getElementById("plusBtn");
+  const minusBtn = document.getElementById("minusBtn");
+  if (plusBtn) {
+    plusBtn.onclick = function () {
+      if (typeof remainingSeconds === "number" && remainingSeconds > 0) {
+        remainingSeconds += 30;
+        endTime += 30000;
+      }
+    };
+  }
+  if (minusBtn) {
+    minusBtn.onclick = function () {
+      if (typeof remainingSeconds === "number" && remainingSeconds > 0) {
+        remainingSeconds = Math.max(0, remainingSeconds - 30);
+        endTime = Math.max(Date.now(), endTime - 30000);
+        if (remainingSeconds < 0) remainingSeconds = 0;
+      }
+    };
   }
 };
 

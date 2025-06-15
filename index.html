@@ -12,9 +12,13 @@
       <select id="pastaDropdown">
         <option value="">Timers</option>
       </select>
-      <nav>
-        <a href="edit.html">Edit my timers</a>
-      </nav>
+      <div class="auth-buttons">
+        <nav>
+          <a href="edit.html" id="editTimersLink">Edit my timers</a>
+        </nav>
+        <button id="loginBtn">Login</button>
+        <button id="logoutBtn" style="display: none">Logout</button>
+      </div>
     </header>
 
     <main>
@@ -25,7 +29,7 @@
           </div>
           <h1 id="title">PastaTimer</h1>
         </div>
-        <p class="subtitle">
+        <p class="subtitle" id="subtitle">
           Perfect pasta, every time. Scan your tag, cook it right.
           <br />
           Log in to use your personal length timers.
@@ -34,6 +38,7 @@
 
       <section class="timer-section">
         <div class="timer-container">
+          <button id="minusBtn" aria-label="Subtract 30 seconds">−</button>
           <svg id="progressCircle" width="140" height="140">
             <circle
               cx="70"
@@ -57,14 +62,12 @@
               transform="rotate(-90 70 70)"
             />
           </svg>
+          <button id="plusBtn" aria-label="Add 30 seconds">+</button>
           <div id="timer">--:--</div>
         </div>
         <div class="buttons">
-          <button id="loginBtn">Login</button>
-          <button id="logoutBtn" style="display: none">Logout</button>
           <button id="pausePlayBtn" style="display: none">||</button>
           <button id="restartBtn" style="display: none">↻</button>
-          <span id="userEmail"></span>
         </div>
       </section>
     </main>
@@ -109,6 +112,7 @@
       const loginBtn = document.getElementById("loginBtn");
       const logoutBtn = document.getElementById("logoutBtn");
       const userEmail = document.getElementById("userEmail");
+      const editTimersLink = document.getElementById("editTimersLink");
 
       loginBtn.onclick = () => {
         const provider = new GoogleAuthProvider();
@@ -154,11 +158,14 @@
       onAuthStateChanged(auth, async (user) => {
         const params = new URLSearchParams(window.location.search);
         const timer = params.get("timer");
-
         if (user) {
+          const subtitle = document.getElementById("subtitle");
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log out to use standard timers.`;
+
           loginBtn.style.display = "none";
           logoutBtn.style.display = "inline-block";
           userEmail.textContent = user.email;
+          if (editTimersLink) editTimersLink.style.display = "inline";
           populateDropdown(user.uid);
 
           const pastaMap = await fetchPastaMap(user.uid);
@@ -167,9 +174,13 @@
             showPastaImage(timer.toLowerCase());
           }
         } else {
+          const subtitle = document.getElementById("subtitle");
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Login to use personal length timers.`;
+
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
           userEmail.textContent = "";
+          if (editTimersLink) editTimersLink.style.display = "none";
           populateDropdown(null);
 
           const pastaMap = await fetchPastaMap(null);
