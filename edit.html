@@ -61,6 +61,10 @@
           logoutBtn.style.display = "none";
           userEmail.textContent = "";
           await loadTimers();
+          // Make input fields readonly if not logged in
+          document.querySelectorAll("input[data-pasta]").forEach((input) => {
+            input.readOnly = true;
+          });
         }
       });
 
@@ -173,9 +177,15 @@
       <select id="pastaDropdown">
         <option value="">Timers</option>
       </select>
-      <nav>
-        <a href="#" onclick="history.back(); return false;">Back to Timer</a>
-      </nav>
+      <div class="auth-buttons">
+        <nav>
+          <a href="#" onclick="history.back(); return false;">Back to Timer</a>
+        </nav>
+        <button id="loginBtn" class="buttons">Login</button>
+        <button id="logoutBtn" class="buttons" style="display: none">
+          Logout
+        </button>
+      </div>
     </header>
 
     <main class="editor-container">
@@ -184,14 +194,7 @@
       <div id="table-holder"></div>
 
       <div id="loginAndSave">
-        <div class="button-row">
-          <button id="loginBtn" class="buttons">Login</button>
-          <button id="logoutBtn" class="buttons" style="display: none">
-            Logout
-          </button>
-          <button id="saveBtn" class="buttons">Save</button>
-        </div>
-        <span id="userEmail"></span>
+        <button id="saveBtn" class="buttons">Save</button>
       </div>
     </main>
 
