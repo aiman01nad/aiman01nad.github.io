@@ -61,6 +61,10 @@
           logoutBtn.style.display = "none";
           userEmail.textContent = "";
           await loadTimers();
+          // Make input fields readonly if not logged in
+          document.querySelectorAll("input[data-pasta]").forEach((input) => {
+            input.readOnly = true;
+          });
         }
       });
 

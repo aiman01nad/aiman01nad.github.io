@@ -158,32 +158,25 @@
       onAuthStateChanged(auth, async (user) => {
         const params = new URLSearchParams(window.location.search);
         const timer = params.get("timer");
+        const subtitle = document.getElementById("subtitle");
         if (user) {
-          const subtitle = document.getElementById("subtitle");
-          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log out to use standard timers.`;
-
+          await populateDropdown(user.uid);
           loginBtn.style.display = "none";
           logoutBtn.style.display = "inline-block";
-          userEmail.textContent = user.email;
-          if (editTimersLink) editTimersLink.style.display = "inline";
-          populateDropdown(user.uid);
-
           const pastaMap = await fetchPastaMap(user.uid);
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log out to use standard timers.`;
+          if (editTimersLink) editTimersLink.style.display = "inline";
           if (timer && pastaMap[timer.toLowerCase()]) {
             startTimer(timer, pastaMap[timer.toLowerCase()]);
             showPastaImage(timer.toLowerCase());
           }
         } else {
-          const subtitle = document.getElementById("subtitle");
-          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Login to use personal length timers.`;
-
+          await populateDropdown(null);
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
-          userEmail.textContent = "";
-          if (editTimersLink) editTimersLink.style.display = "none";
-          populateDropdown(null);
-
           const pastaMap = await fetchPastaMap(null);
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Login to use personal length timers.`;
+          if (editTimersLink) editTimersLink.style.display = "none";
           if (timer && pastaMap[timer.toLowerCase()]) {
             startTimer(timer, pastaMap[timer.toLowerCase()]);
             showPastaImage(timer.toLowerCase());
