@@ -39,7 +39,6 @@
 
       const loginBtn = document.getElementById("loginBtn");
       const logoutBtn = document.getElementById("logoutBtn");
-      const userEmail = document.getElementById("userEmail");
 
       loginBtn.onclick = () => {
         const provider = new GoogleAuthProvider();
@@ -58,7 +57,6 @@
         } else {
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
-          userEmail.textContent = "";
           await loadTimers();
           // Make input fields readonly if not logged in
           document.querySelectorAll("input[data-pasta]").forEach((input) => {
