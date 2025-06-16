@@ -13,9 +13,6 @@
         <option value="">Timers</option>
       </select>
       <div class="auth-buttons">
-        <nav>
-          <a href="edit.html" id="editTimersLink">Edit my timers</a>
-        </nav>
         <button id="loginBtn">Login</button>
         <button id="logoutBtn" style="display: none">Logout</button>
       </div>
@@ -32,7 +29,7 @@
         <p class="subtitle" id="subtitle">
           Perfect pasta, every time. Scan your tag, cook it right.
           <br />
-          Log in to use your personal length timers.
+          Log in to use personal length timer.
         </p>
       </section>
 
@@ -69,6 +66,13 @@
           <button id="pausePlayBtn" style="display: none">||</button>
           <button id="restartBtn" style="display: none">↻</button>
         </div>
+        <button
+          id="editTimersLink"
+          onclick="window.location.href='edit.html'"
+          style="width: 8rem"
+        >
+          Edit Timers
+        </button>
       </section>
     </main>
 
@@ -164,7 +168,7 @@
           loginBtn.style.display = "none";
           logoutBtn.style.display = "inline-block";
           const pastaMap = await fetchPastaMap(user.uid);
-          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log out to use standard timers.`;
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log out to use standard time.`;
           if (editTimersLink) editTimersLink.style.display = "inline";
           if (timer && pastaMap[timer.toLowerCase()]) {
             startTimer(timer, pastaMap[timer.toLowerCase()]);
@@ -175,7 +179,7 @@
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
           const pastaMap = await fetchPastaMap(null);
-          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Login to use personal length timers.`;
+          subtitle.innerHTML = `Perfect pasta, every time. Scan your tag, cook it right.<br />Log in to use personal length timer.`;
           if (editTimersLink) editTimersLink.style.display = "none";
           if (timer && pastaMap[timer.toLowerCase()]) {
             startTimer(timer, pastaMap[timer.toLowerCase()]);
