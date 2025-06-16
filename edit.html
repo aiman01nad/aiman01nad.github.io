@@ -54,7 +54,6 @@
         if (user) {
           loginBtn.style.display = "none";
           logoutBtn.style.display = "inline-block";
-          userEmail.textContent = user.email;
           await loadTimers();
         } else {
           loginBtn.style.display = "inline-block";
@@ -151,13 +150,15 @@
           return;
         }
 
-        // Save to user-specific Firestore document
         const user = auth.currentUser;
         if (!user) {
           alert("You must be logged in to save your pasta times!");
           return;
         }
         await saveUserTimers(user.uid, updated);
+
+        localStorage.setItem("pastaTimersUpdated", "1");
+
         alert("Saved!");
         await loadTimers();
       }
@@ -167,42 +168,7 @@
         await loadTimers();
         document.getElementById("saveBtn").onclick = saveTimers;
       };
-    </script>
-  </head>
-  <body>
-    <header>
-      <a href="#" onclick="history.back(); return false;" class="logo"
-        >🍝 PastaTimer</a
-      >
-      <select id="pastaDropdown">
-        <option value="">Timers</option>
-      </select>
-      <div class="auth-buttons">
-        <nav>
-          <a href="#" onclick="history.back(); return false;">Back to Timer</a>
-        </nav>
-        <button id="loginBtn" class="buttons">Login</button>
-        <button id="logoutBtn" class="buttons" style="display: none">
-          Logout
-        </button>
-      </div>
-    </header>
 
-    <main class="editor-container">
-      <h2>Edit the Pasta Timers</h2>
-
-      <div id="table-holder"></div>
-
-      <div id="loginAndSave">
-        <button id="saveBtn" class="buttons">Save</button>
-      </div>
-    </main>
-
-    <footer>
-      <p>Custom pasta times are stored in the cloud ☁️</p>
-    </footer>
-
-    <script>
       async function fetchPastaKeys(userId) {
         let url;
         if (userId) {
@@ -246,5 +212,38 @@
         }
       });
     </script>
+  </head>
+  <body>
+    <header>
+      <a href="#" onclick="history.back(); return false;" class="logo"
+        >🍝 PastaTimer</a
+      >
+      <select id="pastaDropdown">
+        <option value="">Timers</option>
+      </select>
+      <div class="auth-buttons">
+        <nav>
+          <a href="#" onclick="history.back(); return false;">Back to Timer</a>
+        </nav>
+        <button id="loginBtn" class="buttons">Login</button>
+        <button id="logoutBtn" class="buttons" style="display: none">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="editor-container">
+      <h2>Edit the Pasta Timers</h2>
+
+      <div id="table-holder"></div>
+
+      <div id="loginAndSave">
+        <button id="saveBtn" class="buttons">Save</button>
+      </div>
+    </main>
+
+    <footer>
+      <p>Custom pasta times are stored in the cloud ☁️</p>
+    </footer>
   </body>
 </html>
