@@ -220,9 +220,6 @@
         <option value="">Timers</option>
       </select>
       <div class="auth-buttons">
-        <nav>
-          <a href="#" onclick="history.back(); return false;">Back to Timer</a>
-        </nav>
         <button id="loginBtn" class="buttons">Login</button>
         <button id="logoutBtn" class="buttons" style="display: none">
           Logout
@@ -231,12 +228,19 @@
     </header>
 
     <main class="editor-container">
-      <h2>Edit the Pasta Timers</h2>
+      <h2>Edit Pasta Timers</h2>
+      <p class="subtitle" id="subtitle">
+        Customize your pasta cooking times below. Your preferences will be saved
+        to your account and available on any device.
+      </p>
 
       <div id="table-holder"></div>
 
       <div id="loginAndSave">
-        <button id="saveBtn" class="buttons">Save</button>
+        <button onclick="history.back(); return false;" class="buttons">
+          ← Timer
+        </button>
+        <button id="saveBtn" class="buttons">✓ Save</button>
       </div>
     </main>
 

@@ -195,8 +195,9 @@ input[type="number"] {
 
 #loginAndSave {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   margin-top: 1rem;
 }
 
