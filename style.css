@@ -158,6 +158,14 @@ footer {
   background-position: right 0.75rem center;
   background-size: 1.2em;
   padding-right: 2.5em;
+  color: #3e3e3e; /* Force custom text color */
+}
+
+/* iOS Safari fix for select color */
+#pastaDropdown,
+#pastaDropdown option {
+  color: #3e3e3e !important;
+  background-color: #fff8e6 !important;
 }
 
 @media (max-width: 600px) {
