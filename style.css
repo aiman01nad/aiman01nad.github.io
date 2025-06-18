@@ -115,8 +115,6 @@ footer {
   color: #666;
   font-size: 0.9rem;
 }
-
-/* NEW: Pasta photo with label */
 #pastaPhoto {
   text-align: center;
 }
@@ -158,10 +156,9 @@ footer {
   background-position: right 0.75rem center;
   background-size: 1.2em;
   padding-right: 2.5em;
-  color: #3e3e3e; /* Force custom text color */
+  color: #3e3e3e;
 }
 
-/* iOS Safari fix for select color */
 #pastaDropdown,
 #pastaDropdown option {
   color: #3e3e3e !important;
@@ -251,7 +248,6 @@ input[type="number"] {
 #plusBtn:hover,
 #minusBtn:hover {
   background: #e0c14d;
-  transform: translateY(-2px) scale(1.07);
 }
 
 #plusBtn:active,

@@ -109,16 +109,13 @@ async function fetchPastaMap(userId) {
 }
 
 window.onload = async function () {
-  // If timers were updated in edit.html, reload to get fresh data
   if (localStorage.getItem("pastaTimersUpdated") === "1") {
     localStorage.removeItem("pastaTimersUpdated");
     window.location.reload();
     return;
   }
-  // Wait for Firebase Auth to be ready if available
   let userId = null;
   if (window.firebaseAuth) {
-    // Firebase Auth is loaded as a global in index.html
     userId = window.firebaseAuth.currentUser
       ? window.firebaseAuth.currentUser.uid
       : null;
@@ -139,7 +136,6 @@ window.onload = async function () {
       if (typeof remainingSeconds === "number" && remainingSeconds > 0) {
         remainingSeconds += 30;
         endTime += 30000;
-        // If paused, update timer display immediately
         if (paused) {
           const mins = Math.floor(remainingSeconds / 60);
           const secs = remainingSeconds % 60;
@@ -157,7 +153,6 @@ window.onload = async function () {
         remainingSeconds = Math.max(0, remainingSeconds - 30);
         endTime = Math.max(Date.now(), endTime - 30000);
         if (remainingSeconds < 0) remainingSeconds = 0;
-        // If paused, update timer display immediately
         if (paused) {
           const mins = Math.floor(remainingSeconds / 60);
           const secs = remainingSeconds % 60;
