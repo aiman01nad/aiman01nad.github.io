@@ -46,7 +46,13 @@
       };
 
       logoutBtn.onclick = () => {
-        signOut(auth);
+        signOut(auth).then(() => {
+          if (document.referrer && document.referrer !== window.location.href) {
+            window.location.href = document.referrer;
+          } else {
+            window.location.href = "index.html";
+          }
+        });
       };
 
       onAuthStateChanged(auth, async (user) => {
@@ -155,6 +161,12 @@
 
         alert("Saved!");
         await loadTimers();
+
+        if (document.referrer && document.referrer !== window.location.href) {
+          window.location.href = document.referrer;
+        } else {
+          window.location.href = "index.html";
+        }
       }
 
       window.onload = async () => {
