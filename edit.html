@@ -58,7 +58,6 @@
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
           await loadTimers();
-          // Make input fields readonly if not logged in
           document.querySelectorAll("input[data-pasta]").forEach((input) => {
             input.readOnly = true;
           });
@@ -85,7 +84,6 @@
 
       function renderTable(data) {
         pastaTable.innerHTML = `<tr><th>Pasta Type</th><th>Minutes</th></tr>`;
-        // Sort keys alphabetically (case-insensitive)
         const sortedKeys = Object.keys(data).sort((a, b) =>
           a.localeCompare(b, undefined, { sensitivity: "base" })
         );
@@ -110,14 +108,12 @@
         let data = null;
         if (user) {
           data = await loadUserTimers(user.uid);
-          // If user_timers is missing or empty, fall back to shared timers
           if (!data || Object.keys(data).length === 0) {
             const docRef = doc(db, "timers", "pasta");
             const snap = await getDoc(docRef);
             data = snap.exists() ? snap.data() : defaultPastaMap;
           }
         } else {
-          // fallback to shared/public timers
           const docRef = doc(db, "timers", "pasta");
           const snap = await getDoc(docRef);
           data = snap.exists() ? snap.data() : defaultPastaMap;
@@ -199,7 +195,6 @@
         };
       }
 
-      // Wait for Firebase Auth to be ready and then use userId
       window.addEventListener("DOMContentLoaded", () => {
         if (window.firebase && window.firebase.auth) {
           window.firebase.auth().onAuthStateChanged((user) => {
